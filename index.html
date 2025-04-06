@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- <base href="/" /> -->
+    <base href="./" />
+    <meta charset="UTF-8" />
+    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+    <meta name="description" content="A new Flutter project." />
+
+    <!-- iOS meta tags & icons -->
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="apple-mobile-web-app-title" content="web_porto" />
+    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="favicon.png" />
+
+    <title>web_porto</title>
+    <link rel="manifest" href="manifest.json" />
+
+    <!-- Tambahan untuk Splash Screen -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+      }
+
+      #splash {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ffffff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        transition: opacity 0.5s ease-out;
+      }
+
+      #splash.hidden {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      #splash-text {
+        font-family: "Poppins", sans-serif;
+        font-size: 45px;
+        font-weight: 100;
+        line-height: 1;
+        color: #2c3e50;
+        letter-spacing: 3px;
+        opacity: 0;
+      }
+
+      @keyframes fadeInOut {
+        0% {
+          opacity: 0;
+        }
+        20% {
+          opacity: 1;
+        }
+        80% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes dots {
+        0% {
+          content: ".";
+        }
+        33% {
+          content: "..";
+        }
+        66% {
+          content: "...";
+        }
+        100% {
+          content: ".";
+        }
+      }
+
+      #splash-text.loading::after {
+        content: "...";
+        display: inline-block;
+        width: 30px;
+        animation: dots 1.5s infinite steps(3);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Splash Screen -->
+    <div id="splash">
+      <span id="splash-text"></span>
+    </div>
+
+    <!-- Script Flutter -->
+    <script src="flutter_bootstrap.js" async></script>
+
+    <!-- JavaScript untuk animasi teks berurutan -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const texts = ["WELCOME", "TO", "MY PORTFOLIO", "LOADING"];
+        let currentIndex = 0;
+        const splashText = document.getElementById("splash-text");
+        let textInterval;
+
+        function showNextText() {
+          if (splashText) {
+            splashText.textContent = texts[currentIndex];
+            splashText.style.animation = "none"; // Reset animasi
+            void splashText.offsetWidth; // Trigger reflow
+
+            if (currentIndex < texts.length - 1) {
+              splashText.style.animation = "fadeInOut 2s ease-in-out forwards";
+            } else {
+              splashText.style.animation = "fadeIn 1s ease-in forwards";
+              splashText.classList.add("loading");
+              clearInterval(textInterval); // Hentikan interval saat sampai LOADING
+            }
+
+            currentIndex++;
+            if (currentIndex >= texts.length) {
+              currentIndex = texts.length - 1; // Tetap di LOADING
+            }
+          }
+        }
+
+        // Mulai animasi
+        showNextText();
+        textInterval = setInterval(showNextText, 2000);
+
+        // Sembunyikan splash screen setelah Flutter dimuat
+        window.addEventListener("flutter-first-frame", function () {
+          clearInterval(textInterval); // Pastikan interval berhenti
+          const splash = document.getElementById("splash");
+          if (splash) {
+            splash.classList.add("hidden");
+            setTimeout(function () {
+              if (splash) splash.remove(); // Pastikan masih ada sebelum dihapus
+            }, 500);
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
